@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Debug</title>
+</head>
+<body>
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+
+    <h2>Protected API</h2>
+    <button onclick="getProtectedData()">Cek Protected</button>
+
+    <h3>Response:</h3>
+    <pre id="response"></pre>
+
+    <script>
+        async function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            const res = await fetch("http://127.0.0.1:5000/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                localStorage.setItem("token", data.access_token);
+                document.getElementById("response").textContent = "Login sukses! Token disimpan.";
+            } else {
+                document.getElementById("response").textContent = "Login gagal: " + data.error;
+            }
+        }
+
+        async function getProtectedData() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                document.getElementById("response").textContent = "Silakan login dulu!";
+                return;
+            }
+
+            const res = await fetch("http://127.0.0.1:5000/auth/protected", {
+                method: "GET",
+                headers: { "Authorization": "Bearer " + token }
+            });
+
+            const data = await res.json();
+            document.getElementById("response").textContent = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+</html>
