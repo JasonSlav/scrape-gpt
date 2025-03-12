@@ -25,11 +25,10 @@ def run_scraping():
     response_str = json.dumps(response, ensure_ascii=False)
 
     new_conversation = Conversation(user_id=current_user.id, message=query, response=response_str)
-    print(response_str)
     
     # Simpan ke database
-    # db.session.add(new_conversation)
-    # db.session.commit()
+    db.session.add(new_conversation)
+    db.session.commit()
 
     return jsonify({"message": "Scraping berhasil!", "data": response}), 200
 

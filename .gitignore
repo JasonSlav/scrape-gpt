@@ -6,4 +6,5 @@
 .env
 /models.py
 /user.json
+/query.json
 /index.html
