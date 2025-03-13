@@ -10,6 +10,6 @@ DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "5432")
 
 class Config:
-    SECRET_KEY = os.getenv("SECRET_KEY", "bismillahucl")
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "postgresql://postgres:0963@127.0.0.1/flask2")
+    SECRET_KEY = os.getenv("SECRET_KEY", "SECRET_KEY")
+    SQLALCHEMY_DATABASE_URI = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
