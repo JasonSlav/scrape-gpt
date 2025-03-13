@@ -1,4 +1,7 @@
 /__pycache__
+/models/__pycache__
+/routes/__pycache__
+/scraper/__pycache__
 /instance
 /migrations
 /venv
