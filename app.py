@@ -23,7 +23,6 @@ def load_user(user_id):
     from models.user import User
     return User.query.get(int(user_id))
 
-# Register Blueprints
 app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(scrape_bp, url_prefix="/scrape")
 
