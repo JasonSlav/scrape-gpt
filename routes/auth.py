@@ -30,14 +30,15 @@ def login():
     password = request.form.get("password")
 
     if not username or not password:
-        return jsonify({"error": "Username dan password harus diisi"}), 400
+        flash("Username dan password harus diisi", "error")
+        return redirect(url_for("index"))
 
     user = User.query.filter_by(username=username).first()
-    
+
     if user and user.check_password(password):
         login_user(user, remember=True)
-        return redirect(url_for("home"))
-    
+        return redirect(url_for("home"))  # Redirect langsung tanpa JSON
+
     flash("Username atau password salah!", "error")
     return redirect(url_for("index"))
 

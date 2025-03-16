@@ -2,29 +2,28 @@ document.addEventListener("DOMContentLoaded", function () {
     // LOGIN
     document.querySelector(".form-box.login form").addEventListener("submit", async function (event) {
         event.preventDefault();
-
+    
         let username = document.getElementById("loginUsername").value;
         let password = document.getElementById("loginPassword").value;
-
+    
         let formData = new URLSearchParams();
         formData.append("username", username);
         formData.append("password", password);
-
+    
         let response = await fetch("/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: formData
         });
-
+    
         let result = await response.json();
         if (response.ok) {
-            alert(result.message);
-            localStorage.setItem("token", "logged-in");
-            window.location.href = "/home";
+            alert(result.message);  // Beri alert sukses
+            window.location.href = result.redirect;  // Redirect ke halaman tujuan
         } else {
             alert(result.error);
         }
-    });
+    });    
 
     // REGISTER
     document.querySelector(".form-box.register form").addEventListener("submit", async function (event) {
