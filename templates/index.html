@@ -11,18 +11,18 @@
 </head>
 
 <body>
-{% with messages = get_flashed_messages(with_categories=true) %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-        <div class="flash-container">
-            {% for category, message in messages %}
-                <div class="flash-message {{ category }}">
-                    <span>{{ message }}</span>
-                    <button class="close-btn" onclick="this.parentElement.style.display='none';">✖</button>
-                </div>
-            {% endfor %}
+    <div class="flash-container">
+        {% for category, message in messages %}
+        <div class="flash-message {{ category }}">
+            <span>{{ message }}</span>
+            <button class="close-btn" onclick="this.parentElement.style.display='none';">✖</button>
         </div>
+        {% endfor %}
+    </div>
     {% endif %}
-{% endwith %}
+    {% endwith %}
 
 
     <div class="wrapper">
@@ -84,17 +84,21 @@
     <script src="/static/script.js" async></script>
     <script src="/static/index.js" async></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            setTimeout(function() {
-                let flashMessages = document.querySelectorAll(".flash-message");
-                flashMessages.forEach(function(msg) {
-                    msg.style.animation = "fadeOut 0.5s ease-in-out forwards";
-                });
-            }, 3000);
+        document.addEventListener("DOMContentLoaded", function () {
+            // Ambil flash message dari session storage
+            let flashData = sessionStorage.getItem("flashMessage");
+            if (flashData) {
+                let flash = JSON.parse(flashData);
+                let flashContainer = document.querySelector(".flash-container") || document.body;
+                let flashMessage = document.createElement("div");
+                flashMessage.classList.add("flash-message", flash.category);
+                flashMessage.innerHTML = `<span>${flash.message}</span>
+                <button class="close-btn" onclick="this.parentElement.style.display='none';">✖</button>`;
+                flashContainer.appendChild(flashMessage);
+                sessionStorage.removeItem("flashMessage"); // Hapus setelah ditampilkan
+            }
         });
-
-</script>
-
+    </script>
 </body>
 
 </html>
