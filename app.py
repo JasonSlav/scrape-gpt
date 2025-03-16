@@ -1,7 +1,8 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, jsonify
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_login import LoginManager, login_required, current_user
+from models.conversation import Conversation
 from config import Config
 from models import db
 from routes.auth import auth_bp
@@ -37,10 +38,37 @@ def index():
 def home():
     return render_template("home.html", username=current_user.username)
 
-@app.route("/chat")
+@app.route('/scrape/conversations')
+@login_required
+def get_conversations():
+    conversations = Conversation.query.all()
+    return jsonify([conv.to_dict() for conv in conversations])
+
+@app.route('/scrape/conversations/<int:conversation_id>')
+@login_required
+def get_conversation_detail(conversation_id):
+    conversation = Conversation.query.get_or_404(conversation_id)
+    return jsonify(conversation.to_dict())
+
+@app.route('/chat/<int:conversation_id>')
+@login_required
+def chat_page(conversation_id):
+    return redirect(url_for('chat', id=conversation_id))
+
+@app.route('/chat')
 @login_required
 def chat():
-    return render_template("chat.html", username=current_user.username)
+    return render_template('chat.html', username=current_user.username)
+
+@app.route('/preprocess/<int:conversation_id>')
+@login_required
+def preprocess_page(conversation_id):
+    return redirect(url_for('preprocess', id=conversation_id))
+
+@app.route('/preprocess')
+@login_required
+def preprocess():
+    return render_template('preprocess.html', username=current_user.username)
 
 @app.route("/history")
 @login_required

@@ -72,8 +72,7 @@
                             <p class="mt-1 text-sm text-gray-400">Masukkan link percakapan ChatGPT yang ingin Anda
                                 bagikan</p>
                         </div>
-
-                        <form>
+                        <form id="scrapeForm">
                             <div class="space-y-4">
                                 <div>
                                     <label for="url" class="block text-sm font-medium text-gray-300">URL ChatGPT</label>
@@ -104,7 +103,7 @@
                                 </div>
                             </div>
                         </form>
-
+                        <div id="responseMessage" class="mt-4 text-white"></div>
                     </div>
                 </div>
             </main>
@@ -112,4 +111,47 @@
     </div>
     <script src="/static/script.js" defer></script>
     <script src="/static/navbar.js" defer></script>
+    <script>
+        //scrape
+        document.getElementById("scrapeForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const url = document.getElementById("url").value.trim();
+            const description = document.getElementById("description").value.trim();
+            const responseMessage = document.getElementById("responseMessage");
+
+            if (!url || !description) {
+                responseMessage.innerText = "URL dan Deskripsi wajib diisi!";
+                responseMessage.style.color = "red";
+                return;
+            }
+
+            responseMessage.innerText = "Mengirim permintaan...";
+            responseMessage.style.color = "white";
+
+            try {
+                const response = await fetch("/scrape/run", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ url, description })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    responseMessage.innerText = "Scraping berhasil!";
+                    responseMessage.style.color = "green";
+                } else {
+                    responseMessage.innerText = "Gagal: " + result.error;
+                    responseMessage.style.color = "red";
+                }
+            } catch (error) {
+                responseMessage.innerText = "Terjadi kesalahan: " + error.message;
+                responseMessage.style.color = "red";
+            }
+        });
+    </script>
 </body>
+
+</html>

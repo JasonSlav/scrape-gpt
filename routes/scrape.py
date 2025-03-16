@@ -4,6 +4,7 @@ from flask_login import login_required, current_user
 from models import db
 from models.conversation import Conversation
 from scraper.scraper import scrape_data
+from scraper.preprocess import preprocess_conversation
 
 scrape_bp = Blueprint("scrape", __name__)
 
@@ -11,16 +12,26 @@ scrape_bp = Blueprint("scrape", __name__)
 @login_required
 def run_scraping():
     data = request.json
-    query = data.get("query")
+    url = data.get("url")
+    description = data.get("description")
 
-    if not query:
-        return jsonify({"error": "Query tidak boleh kosong"}), 400
+    if not url:
+        return jsonify({"error": "URL tidak boleh kosong"}), 400
 
-    response = scrape_data(query)
+    response = scrape_data(url)
+    if "error" in response:
+        return jsonify({"error": response["error"]}), 400
 
     response_str = json.dumps(response, ensure_ascii=False)
+    preprocessed = preprocess_conversation(response_str)
 
-    new_conversation = Conversation(user_id=current_user.id, message=query, response=response_str)
+    new_conversation = Conversation(
+        user_id=current_user.id,
+        link=url,
+        response=response_str,
+        preprocessed=preprocessed,
+        description=description
+    )
 
     db.session.add(new_conversation)
     db.session.commit()
@@ -30,5 +41,16 @@ def run_scraping():
 @scrape_bp.route("/conversations", methods=["GET"])
 @login_required
 def get_conversations():
-    conversations = Conversation.query.filter_by(user_id=current_user.id).all()
-    return jsonify([conv.to_dict() for conv in conversations])
+    conversations = Conversation.query.with_entities(
+        Conversation.id, Conversation.created_at, Conversation.link, Conversation.description
+    ).filter_by(user_id=current_user.id).all()
+    
+    return jsonify([
+        {
+            "id": conv.id,
+            "created_at": conv.created_at.isoformat() if conv.created_at else None,
+            "link": conv.link,
+            "description": conv.description
+        }
+        for conv in conversations
+    ])

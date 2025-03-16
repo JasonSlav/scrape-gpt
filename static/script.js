@@ -1,7 +1,7 @@
 const wrapper = document.querySelector(".wrapper");
 const registerLink = document.querySelector(".register-link");
 const loginLink = document.querySelector(".login-link");
-
+//login register
 if (registerLink && wrapper && loginLink) {
 
   registerLink.onclick = () => {
@@ -11,7 +11,7 @@ if (registerLink && wrapper && loginLink) {
     wrapper.classList.remove("active");
   };
 }
-
+//toggle password
 document.querySelectorAll(".toggle-password").forEach((icon) => {
   icon.addEventListener("click", function () {
     const passwordInput = document.getElementById(this.dataset.target);
