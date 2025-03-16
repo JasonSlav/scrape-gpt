@@ -1,6 +1,10 @@
-from datetime import datetime, timezone
+from flask import json
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from sqlalchemy import event
 from models import db
+
+wib = ZoneInfo("Asia/Jakarta")
 
 class Conversation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -8,9 +12,9 @@ class Conversation(db.Model):
     link = db.Column(db.Text, nullable=False)
     response = db.Column(db.Text, nullable=False)
     preprocessed = db.Column(db.Text, nullable=False)
-    description = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
-    updated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+    description = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(wib))
+    updated_at = db.Column(db.DateTime(timezone=True), default=lambda: datetime.now(wib), onupdate=lambda: datetime.now(wib))
 
     def to_dict(self):
         return {
