@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat Detail - ChatScraper</title>
+  <link rel="stylesheet" href="/static/flash.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://ai-public.creatie.ai/gen_page/tailwind-custom.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com/3.4.5"></script>
+  <script src="https://ai-public.creatie.ai/gen_page/tailwind-config.min.js"></script>
+</head>
+
+<body class="min-h-screen bg-gray-900">
+  <div class="flash-container fixed top-4 right-4 z-50"></div>
+  <div id="chat" class="flex min-h-screen">
+    <div id="navbar-container"></div>
+    <div class="flex-1">
+      <header class="bg-gray-800 border-b border-gray-700">
+        <div class="flex items-center justify-between px-8 h-16">
+          <div class="flex items-center">
+            <button id="menu-toggle" class="bg-gray-800 p-2 rounded-md text-white hidden">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="text-xl font-semibold text-white ml-4">ChatScraper</h1>
+          </div>
+          <div class="relative inline-block text-left">
+            <button id="dropdownButton" class="flex items-center text-sm font-medium text-gray-300 hover:text-white">
+              <span class="ml-2">{{ username }}</span>
+              <i class="fas fa-chevron-down ml-2 text-gray-400"></i>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main class="flex-1 overflow-y-auto bg-gray-900">
+        <div class="py-6">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+            <div class="p-6 space-y-6">
+              <div id="chat-container" class="flex flex-col space-y-4"></div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const chatId = urlParams.get("id");
+      const chatContainer = document.getElementById("chat-container");
+
+      if (!chatId) {
+        chatContainer.innerHTML = `<p class="text-gray-400 text-center mt-4">Chat tidak ditemukan.</p>`;
+        return;
+      }
+
+      try {
+        const response = await fetch(`/scrape/conversations/${chatId}`);
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const chatData = await response.json();
+
+        if (!chatData.preprocessed) {
+          chatContainer.innerHTML = `<p class="text-gray-400 text-center mt-4">Tidak ada pesan dalam percakapan ini.</p>`;
+          return;
+        }
+
+        const messages = JSON.parse(chatData.preprocessed);
+
+        messages.forEach((msg, index) => {
+          const isUser = msg.role === "user";
+          const messageElement = document.createElement("div");
+          messageElement.className = `flex items-end ${isUser ? "justify-end" : "justify-start"} my-2 animate-fade-in`;
+
+          const messageText = Array.isArray(msg.text) ? msg.text.join(" ") : msg.text;
+          const formattedText = formatMessageText(messageText);
+          const timestamp = new Date(chatData.created_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+
+          messageElement.innerHTML = `
+                ${!isUser ? `
+                <img src="https://ai-public.creatie.ai/gen_page/logo_placeholder.png" alt="ChatGPT" class="h-8 w-8 rounded-full mr-3" />
+                ` : ""}
+                <div class="max-w-2xl p-3 rounded-2xl shadow-md ${isUser ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300"}">
+                    <p class="text-sm">${formattedText}</p>
+                    <span class="text-xs text-gray-400 block mt-1 text-right">${timestamp}</span>
+                    <button class="copy-button text-gray-400 hover:text-gray-300 mt-2" data-text="${messageText}">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <span class="text-xs text-red-400 block mt-1 text-right">*Preprocessed Text*</span>
+                </div>
+                ${isUser ? `
+                <i class="fas fa-user-circle text-gray-400 text-2xl ml-3"></i>
+                ` : ""}
+            `;
+
+          chatContainer.appendChild(messageElement);
+        });
+
+        // Event listener untuk copy button
+        document.querySelectorAll(".copy-button").forEach(button => {
+          button.addEventListener("click", function () {
+            navigator.clipboard.writeText(this.getAttribute("data-text")).then(() => {
+              showFlashMessage("Pesan berhasil disalin!", "success");
+            }).catch(() => {
+              showFlashMessage("Gagal menyalin pesan!", "error");
+            });
+          });
+        });
+
+      } catch (error) {
+        console.error("Error fetching chat details:", error);
+        chatContainer.innerHTML = `<p class="text-red-500 text-center mt-4">Gagal mengambil data chat.</p>`;
+      }
+    });
+
+    /**
+     * Fungsi untuk memformat teks pesan agar mendukung
+     * - **Bold** -> **teks**
+     * - *Italic* -> *teks*
+     * - `Kode` -> `teks`
+     */
+    function formatMessageText(text) {
+      if (!text) return "";
+
+      // Ganti line breaks dengan <br>
+      text = text.replace(/\n/g, "<br>");
+
+      // Format bold **text**
+      text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+      // Format italic _text_
+      text = text.replace(/_(.*?)_/g, "<em>$1</em>");
+
+      // Format blockquote "> text"
+      text = text.replace(/^> (.*)$/gm, '<blockquote class="border-l-4 border-gray-500 pl-3 italic text-gray-400">$1</blockquote>');
+
+      // Format kode blok ```code```
+      text = text.replace(/```([\s\S]+?)```/g, '<pre class="bg-gray-900 text-green-400 p-2 rounded-md"><code>$1</code></pre>');
+
+      return text;
+    }
+
+    /**
+     * Menampilkan flash message (notifikasi)
+     */
+    function showFlashMessage(message, category) {
+      let flashContainer = document.querySelector(".flash-container") || document.body;
+      let flashMessage = document.createElement("div");
+
+      flashMessage.classList.add("flash-message", category);
+      flashMessage.innerHTML = `<span>${message}</span>
+        <button class="close-btn" onclick="this.parentElement.style.display='none';">✖</button>`;
+
+      flashContainer.appendChild(flashMessage);
+      sessionStorage.removeItem("flashMessage");
+
+      setTimeout(() => {
+        flashMessage.style.opacity = "0";
+        setTimeout(() => flashMessage.remove(), 500);
+      }, 3000);
+    }
+
+  </script>
+
+  <script src="/static/script.js"></script>
+  <script src="/static/navbar.js" defer></script>
+</body>
+
+</html>
