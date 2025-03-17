@@ -31,6 +31,14 @@
               <span class="ml-2">{{ username }}</span>
               <i class="fas fa-chevron-down ml-2 text-gray-400"></i>
             </button>
+            <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10">
+              <form action="/auth/logout" method="POST">
+                <button type="submit" class="block px-4 py-2 text-sm text-gray-700 rounded-lg hover:bg-gray-100 w-full text-left">
+                  <i class="fas fa-sign-out-alt mr-2"></i>
+                  Logout
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </header>
