@@ -41,13 +41,13 @@ def home():
 @app.route('/scrape/conversations')
 @login_required
 def get_conversations():
-    conversations = Conversation.query.all()
+    conversations = Conversation.query.filter_by(user_id=current_user.id).all()
     return jsonify([conv.to_dict() for conv in conversations])
 
 @app.route('/scrape/conversations/<int:conversation_id>')
 @login_required
 def get_conversation_detail(conversation_id):
-    conversation = Conversation.query.get_or_404(conversation_id)
+    conversation = Conversation.query.filter_by(id=conversation_id, user_id=current_user.id).first_or_404()
     return jsonify(conversation.to_dict())
 
 @app.route('/chat/<int:conversation_id>')

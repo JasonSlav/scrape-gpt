@@ -41,9 +41,9 @@ def run_scraping():
 @scrape_bp.route("/conversations", methods=["GET"])
 @login_required
 def get_conversations():
-    conversations = Conversation.query.with_entities(
+    conversations = Conversation.query.filter_by(user_id=current_user.id).with_entities(
         Conversation.id, Conversation.created_at, Conversation.link, Conversation.description
-    ).filter_by(user_id=current_user.id).all()
+    ).all()
     
     return jsonify([
         {
@@ -54,3 +54,9 @@ def get_conversations():
         }
         for conv in conversations
     ])
+
+@scrape_bp.route("/conversations/<int:conversation_id>", methods=["GET"])
+@login_required
+def get_conversation_detail(conversation_id):
+    conversation = Conversation.query.filter_by(id=conversation_id, user_id=current_user.id).first_or_404()
+    return jsonify(conversation.to_dict())
