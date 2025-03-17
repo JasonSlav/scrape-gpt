@@ -43,6 +43,7 @@
             </button>
             <h1 class="text-xl font-semibold text-white ml-4">ChatScraper</h1>
           </div>
+          <button id="exportButton" class="bg-blue-500 text-white px-4 py-2 rounded-md">Export to CSV</button>
           <div class="relative inline-block text-left">
             <button id="dropdownButton" class="flex items-center text-sm font-medium text-gray-300 hover:text-white">
               <span class="ml-2">{{ username }}</span>
@@ -128,6 +129,58 @@
       } catch (error) {
         console.error("Error fetching chat details:", error);
         chatTableBody.innerHTML = `<tr><td colspan="2" class="text-red-500 text-center mt-4">Gagal mengambil data chat.</td></tr>`;
+      }
+
+      document.getElementById("exportButton").addEventListener("click", exportToCSV);
+
+      async function exportToCSV() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const chatId = urlParams.get("id");
+
+        if (!chatId) {
+          alert("Chat ID tidak ditemukan.");
+          return;
+        }
+
+        try {
+          const response = await fetch(`/scrape/conversations/${chatId}`);
+
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+
+          const chatData = await response.json();
+
+          if (!chatData.preprocessed) {
+            alert("Tidak ada pesan dalam percakapan ini.");
+            return;
+          }
+
+          const messages = JSON.parse(chatData.preprocessed);
+          const csvContent = convertToCSV(messages);
+
+          const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+          const link = document.createElement("a");
+          const url = URL.createObjectURL(blob);
+          link.setAttribute("href", url);
+          link.setAttribute("download", `chat_${chatId}.csv`);
+          link.style.visibility = "hidden";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+        } catch (error) {
+          console.error("Error exporting chat details:", error);
+          alert("Gagal mengekspor data chat.");
+        }
+      }
+
+      function convertToCSV(messages) {
+        const headers = ["Role", "Message"];
+        const rows = messages.map(msg => [msg.role, Array.isArray(msg.text) ? msg.text.join(" ") : msg.text]);
+
+        const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+        return csvContent;
       }
     });
 
