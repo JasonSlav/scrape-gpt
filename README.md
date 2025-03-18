@@ -11,6 +11,9 @@ ChatScraper adalah aplikasi web yang memungkinkan pengguna untuk mengelola dan m
 - **Riwayat Percakapan**: Pengguna dapat melihat riwayat percakapan yang telah disimpan.
 - **Detail Percakapan**: Pengguna dapat melihat detail percakapan yang telah diproses.
 
+## Demonstrasi
+[Link Demonstrasi](https://drive.google.com/file/d/1bpjwQ4yAxkXqSokcM4bS9xZr7OEAndK3/view?usp=drive_link)
+
 ## Instalasi
 
 1. Clone repositori ini:
