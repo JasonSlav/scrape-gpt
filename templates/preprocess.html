@@ -176,10 +176,29 @@
       }
 
       function convertToCSV(messages) {
-        const headers = ["Role", "Message"];
-        const rows = messages.map(msg => [msg.role, Array.isArray(msg.text) ? msg.text.join(" ") : msg.text]);
-
-        const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+        const headers = ["User", "Assistant"];
+        const rows = [];
+        
+        for (let i = 0; i < messages.length; i++) {
+          const message = messages[i];
+          const messageText = Array.isArray(message.text) ? message.text.join(" ") : message.text;
+          
+          const cleanText = `"${messageText.replace(/"/g, '""')}"`;
+          
+          if (message.role === 'user') {
+            rows.push([cleanText, '']);
+          } else if (message.role === 'assistant') {
+            if (rows.length > 0) {
+              rows[rows.length - 1][1] = cleanText;
+            }
+          }
+        }
+      
+        const csvContent = [
+          headers.join(','),
+          ...rows.map(row => row.join(','))
+        ].join('\n');
+      
         return csvContent;
       }
     });
