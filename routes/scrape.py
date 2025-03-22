@@ -60,3 +60,11 @@ def get_conversations():
 def get_conversation_detail(conversation_id):
     conversation = Conversation.query.filter_by(id=conversation_id, user_id=current_user.id).first_or_404()
     return jsonify(conversation.to_dict())
+
+@scrape_bp.route("/conversations/<int:conversation_id>", methods=["DELETE"])
+@login_required
+def delete_conversation(conversation_id):
+    conversation = Conversation.query.filter_by(id=conversation_id, user_id=current_user.id).first_or_404()
+    db.session.delete(conversation)
+    db.session.commit()
+    return jsonify({"message": "Percakapan berhasil dihapus."}), 200

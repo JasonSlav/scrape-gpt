@@ -123,24 +123,36 @@
                                 <a href="/chat?id=${conv.id}" class="action-button bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded">
                                     Chat
                                 </a>
+                                <button class="delete-button bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded" data-id="${conv.id}">
+                                    Delete
+                                </button>
                             </div>
                         </td>
                     `;
                     conversationList.appendChild(row);
                 });
 
-                // Tambahkan event listener ke semua tombol yang baru dibuat
-                document.querySelectorAll(".action-button").forEach(button => {
+                // Tambahkan event listener ke semua tombol delete
+                document.querySelectorAll(".delete-button").forEach(button => {
                     button.addEventListener("click", async function () {
                         const conversationId = this.getAttribute("data-id");
 
-                        try {
-                            const detailResponse = await fetch(`/scrape/conversations/${conversationId}`);
-                            const detailData = await detailResponse.json();
+                        if (confirm("Apakah Anda yakin ingin menghapus percakapan ini?")) {
+                            try {
+                                const deleteResponse = await fetch(`/scrape/conversations/${conversationId}`, {
+                                    method: "DELETE",
+                                });
 
-                            alert(`Detail Percakapan:\nTanggal: ${detailData.created_at}\nDeskripsi: ${detailData.description}`);
-                        } catch (error) {
-                            console.error("Error fetching conversation details:", error);
+                                if (deleteResponse.ok) {
+                                    alert("Percakapan berhasil dihapus.");
+                                    this.closest("tr").remove();
+                                } else {
+                                    alert("Gagal menghapus percakapan.");
+                                }
+                            } catch (error) {
+                                console.error("Error deleting conversation:", error);
+                                alert("Terjadi kesalahan saat menghapus percakapan.");
+                            }
                         }
                     });
                 });
