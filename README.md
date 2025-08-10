@@ -10,6 +10,7 @@ ChatScraper is a web application that allows users to manage and save ChatGPT co
 - **Text Preprocessing**: Conversation text will be processed to remove punctuation, numbers, and excessive spaces.
 - **Conversation History**: Users can view saved conversation history.
 - **Conversation Details**: Users can view details of processed conversations.
+- **Export to CSV**: Users also can export the processed conversations into a csv file.
 
 ## Demonstration
 [Demo Link](https://drive.google.com/file/d/1bpjwQ4yAxkXqSokcM4bS9xZr7OEAndK3/view?usp=drive_link)
