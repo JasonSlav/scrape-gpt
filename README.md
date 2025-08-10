@@ -1,34 +1,34 @@
 # ChatScraper
 
-ChatScraper adalah aplikasi web yang memungkinkan pengguna untuk mengelola dan menyimpan percakapan ChatGPT. Aplikasi ini menyediakan fitur untuk melakukan scraping data percakapan dari link ChatGPT, memproses teks percakapan, dan menampilkan riwayat percakapan yang telah disimpan.
+ChatScraper is a web application that allows users to manage and save ChatGPT conversations. This application provides features for scraping conversation data from ChatGPT links and processing the text for further use.
 
-## Fitur
+## Features
 
-- **Registrasi dan Login**: Pengguna dapat mendaftar dan masuk ke aplikasi.
-- **Submit Link ChatGPT**: Pengguna dapat memasukkan link percakapan ChatGPT untuk disimpan.
-- **Scraping Data**: Aplikasi akan melakukan scraping data dari link yang diberikan.
-- **Preprocessing Teks**: Teks percakapan akan diproses untuk menghapus tanda baca, angka, dan spasi berlebih.
-- **Riwayat Percakapan**: Pengguna dapat melihat riwayat percakapan yang telah disimpan.
-- **Detail Percakapan**: Pengguna dapat melihat detail percakapan yang telah diproses.
+- **Registration and Login**: Users can register and log in to the application.
+- **Submit ChatGPT Link**: Users can enter a ChatGPT conversation link to save.
+- **Data Scraping**: The application will scrape data from the provided link.
+- **Text Preprocessing**: Conversation text will be processed to remove punctuation, numbers, and excessive spaces.
+- **Conversation History**: Users can view saved conversation history.
+- **Conversation Details**: Users can view details of processed conversations.
 
-## Demonstrasi
-[Link Demonstrasi](https://drive.google.com/file/d/1bpjwQ4yAxkXqSokcM4bS9xZr7OEAndK3/view?usp=drive_link)
+## Demonstration
+[Demo Link](https://drive.google.com/file/d/1bpjwQ4yAxkXqSokcM4bS9xZr7OEAndK3/view?usp=drive_link)
 
-## Instalasi
+## Installation
 
-1. Clone repositori ini:
+1. Clone this repository:
 
     ```sh
     git clone https://github.com/JasonSlav/scrape-gpt.git
     cd scrape-gpt
     ```
 
-2. Buat virtual environment dan aktifkan:
+2. Create and activate a virtual environment:
 
     ```sh
     python -m venv venv
-    source venv/bin/activate  # Untuk pengguna Unix/macOS
-    venv\Scripts\activate  # Untuk pengguna Windows
+    source venv/bin/activate  # For Unix/macOS users
+    venv\Scripts\activate     # For Windows users
     ```
 
 3. Install dependencies:
@@ -37,25 +37,26 @@ ChatScraper adalah aplikasi web yang memungkinkan pengguna untuk mengelola dan m
     pip install -r requirements.txt
     ```
 
-4. Buat file `.env` berdasarkan `.env.example` dan isi dengan konfigurasi yang sesuai:
+4. Create a `.env` file based on `.env.example` and fill it with the appropriate configuration:
 
     ```sh
     cp .env.example .env
     ```
 
-5. Jalankan migrasi database:
+5. Run the database migration:
 
     ```sh
     flask db upgrade
     ```
 
-6. Jalankan aplikasi:
+6. Run the application:
 
     ```sh
     flask run
     ```
 
-## Struktur Proyek
+## Project Structure
+
 
 ```
 .
@@ -92,15 +93,19 @@ ChatScraper adalah aplikasi web yang memungkinkan pengguna untuk mengelola dan m
 └── requirements.txt
 ```
 
-## Penggunaan
 
-1. Buka browser dan akses `http://localhost:5000`.
-2. Daftar akun baru atau login dengan akun yang sudah ada.
-3. Masukkan link percakapan ChatGPT pada halaman utama dan klik "Submit Link".
-4. Klik "Nama Deskripsi Chat" di sebelah kiri untuk melihat detail percakapan yang telah diproses.
-5. Lihat riwayat dan detail preprocessed text pada halaman "Riwayat".
+## Usage
 
-## Kontribusi
+1. Open your browser and access `http://localhost:5000`.
+2. Register a new account or log in with an existing account.
+3. Enter a ChatGPT conversation link on the main page and click "Submit Link".
+4. Click "Chat Description Name" on the left to view details of the processed conversation.
+5. View history and details of preprocessed text on the "History" page.
 
-Jika Anda ingin berkontribusi pada proyek ini, silakan fork repositori ini dan buat pull request dengan perubahan yang Anda usulkan.
+## Contribution
 
+If you would like to contribute to this project, please fork this repository and create a pull request with your proposed changes.
+
+## License
+
+This project is open source and licensed under the terms described in the [LICENSE](LICENSE) file.
